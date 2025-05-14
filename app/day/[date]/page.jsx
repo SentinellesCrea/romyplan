@@ -6,8 +6,8 @@ import dayjs from 'dayjs';
 import { FiTrash } from 'react-icons/fi';
 import { MdLocationOn } from 'react-icons/md';
 import { fetchApi } from '../../../lib/fetchApi';
-import EventForm from '../../components/EventForm';
-import Navbar from '../../components/Navbar';
+import EventForm from '../../components/forms/EventForm';
+import Navbar from '../../components/home/Header';
 
 export default function DayViewPage() {
   const params = useParams();
@@ -66,7 +66,7 @@ export default function DayViewPage() {
 
   return (
     <div>
-      <Navbar />
+      <Header />
       <main className="min-h-screen bg-gray-50 flex">
         {/* Colonne gauche */}
         <div className="w-full md:w-2/5 lg:w-1/3 p-6">

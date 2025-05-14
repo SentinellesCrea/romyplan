@@ -26,6 +26,10 @@ const BudgetSchema = new mongoose.Schema(
       type: String, // Format : YYYY-MM-DD
       required: [true, 'La date est requise'],
     },
+    color: {
+      type: String,
+      default: '#cccccc',
+    },
   },
   {
     timestamps: true,

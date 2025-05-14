@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
 import { FaLocationDot, FaClock, FaArrowRightLong } from "react-icons/fa6";
 import { HiCalendarDateRange } from "react-icons/hi2";
 import { RxCross2 } from "react-icons/rx";
@@ -26,10 +27,17 @@ export default function Events() {
   const loadEvents = async () => {
     try {
       const data = await fetchApi('/api/events');
-      const sorted = [...data].sort(
+      const currentMonth = dayjs().format('YYYY-MM');
+
+      const filtered = data.filter((event) =>
+        dayjs(event.date).format('YYYY-MM') === currentMonth
+      );
+
+      const sorted = filtered.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
-      setEvents(sorted.slice(0, 5));
+
+      setEvents(sorted);
     } catch (err) {
       console.error('Erreur chargement événements :', err);
       toast.error("Erreur lors du chargement des événements");
@@ -54,12 +62,12 @@ export default function Events() {
   return (
     <div className="bg-white p-4 rounded-xl shadow-md transition transform hover:-translate-y-1 duration-300 animate-fadeUp">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-[#110444] font-bold text-lg">Prochains événements</h2>
+        <h2 className="text-[#110444] font-bold text-lg">Événements du mois</h2>
         <PrimaryButton onClick={() => setShowModal(true)}>+ Ajouter</PrimaryButton>
       </div>
 
       {events.length === 0 ? (
-        <p className="text-sm text-gray-500">Aucun événement à venir.</p>
+        <p className="text-sm text-gray-500">Aucun événement ce mois-ci.</p>
       ) : (
         <ul className="space-y-3">
           {events.map((event) => {

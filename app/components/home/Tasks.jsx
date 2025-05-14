@@ -9,6 +9,7 @@ import Modal from '../ui/Modal';
 import TaskForm from '../forms/TaskForm';
 import { fetchApi } from '../../../lib/fetchApi';
 import { toast } from 'react-toastify';
+import dayjs from 'dayjs';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -18,7 +19,14 @@ export default function Tasks() {
   const loadTasks = async () => {
     try {
       const data = await fetchApi('/api/tasks');
-      setTasks(Array.isArray(data) ? data : []);
+
+      // ✅ Filtrer les tâches du mois courant
+      const currentMonth = dayjs().format('YYYY-MM');
+      const filtered = data.filter((task) =>
+        dayjs(task.date).format('YYYY-MM') === currentMonth
+      );
+
+      setTasks(filtered);
     } catch (err) {
       console.error('❌ Erreur chargement des tâches :', err);
       toast.error('Erreur lors du chargement des tâches');
@@ -85,7 +93,7 @@ export default function Tasks() {
   return (
     <div className="bg-white rounded-xl p-4 shadow-md transition transform hover:-translate-y-1 duration-300 animate-fadeUp">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-[#110444] font-bold text-lg">Mes Tâches</h2>
+        <h2 className="text-[#110444] font-bold text-lg">Tâches du mois</h2>
         <PrimaryButton onClick={() => setShowModal(true)}>+ Ajouter</PrimaryButton>
       </div>
 

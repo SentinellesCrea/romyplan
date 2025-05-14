@@ -6,7 +6,7 @@ import PrimaryButton from '../ui/PrimaryButton';
 import SecondaryButton from '../ui/SecondaryButton';
 import { toast } from 'react-toastify';
 
-const categories = ['Course', 'Shopping', 'Loisirs', 'Factures', 'Salaire', 'Dettes', 'Autre'];
+const categories = ['Courses', 'Shopping', 'Loisirs', 'Factures', 'Salaire', 'Dettes', 'Autre'];
 const types = ['revenu', 'dépense'];
 const colors = ['#f59e0b'];
 

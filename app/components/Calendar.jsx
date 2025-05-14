@@ -34,14 +34,14 @@ export default function Calendar({ onDayClick, eventsByDate = {} }) {
   return (
     <div className="bg-white p-4 rounded-xl text-gray-900 w-full">
       <div className="flex justify-between items-center mb-4">
-        <button onClick={prevMonth} className="text-2xl font-bold text-pink-500">&lt;</button>
-        <h2 className="text-xl font-bold text-pink-600 uppercase">
+        <button onClick={prevMonth} className="text-2xl font-bold text-blue-800">&lt;</button>
+        <h2 className="text-xl font-bold text-blue-800 uppercase">
           {currentDate.format('MMMM YYYY')}
         </h2>
-        <button onClick={nextMonth} className="text-2xl font-bold text-pink-500">&gt;</button>
+        <button onClick={nextMonth} className="text-2xl font-bold text-blue-800">&gt;</button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-sm font-semibold text-pink-600 mb-2">
+      <div className="grid grid-cols-7 gap-1 text-center text-sm font-semibold text-blue-800 mb-2">
         {daysOfWeek.map((d) => (
           <div key={d}>{d}</div>
         ))}

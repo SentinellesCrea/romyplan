@@ -1,5 +1,6 @@
-import dbConnect from '../../../lib/dbConnect';
-import Note from '../../../models/Note';
+import { NextResponse } from 'next/server';
+import dbConnect from '../../../../lib/dbConnect';
+import Note from '../../../../models/Note';
 
 export async function DELETE(req, { params }) {
   try {

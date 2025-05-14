@@ -7,6 +7,7 @@ import Modal from '../ui/Modal';
 import NoteForm from '../forms/NoteForm';
 import { fetchApi } from '../../../lib/fetchApi';
 import { toast } from 'react-toastify';
+import dayjs from 'dayjs';
 
 const hexToRgba = (hex, alpha = 0.3) => {
   const cleanHex = hex.replace('#', '');
@@ -24,7 +25,13 @@ export default function Notes() {
   const loadNotes = async () => {
     try {
       const data = await fetchApi('/api/notes');
-      setNotes(data);
+
+      const currentMonth = dayjs().format('YYYY-MM');
+      const filtered = data.filter((note) =>
+        dayjs(note.date).format('YYYY-MM') === currentMonth
+      );
+
+      setNotes(filtered);
     } catch (err) {
       console.error('Erreur chargement notes :', err);
       toast.error("Erreur lors du chargement des notes");
@@ -63,12 +70,12 @@ export default function Notes() {
   return (
     <div className="bg-white rounded-xl p-4 shadow-md transition transform hover:-translate-y-1 duration-300 animate-fadeUp">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-[#110444] font-bold text-lg">Mes Notes</h2>
+        <h2 className="text-[#110444] font-bold text-lg">Notes du mois</h2>
         <PrimaryButton onClick={() => setShowModal(true)}>+ Ajouter</PrimaryButton>
       </div>
 
       {notes.length === 0 ? (
-        <p className="text-sm text-gray-500">Aucune note enregistrée.</p>
+        <p className="text-sm text-gray-500">Aucune note ce mois-ci.</p>
       ) : (
         <ul className="space-y-3">
           {notes.map((note) => (

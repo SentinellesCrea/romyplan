@@ -1,5 +1,6 @@
-import dbConnect from '../../../lib/dbConnect';
-import Anniversary from '../../../models/Anniversary';
+import { NextResponse } from 'next/server';
+import dbConnect from '../../../../lib/dbConnect';
+import Anniversary from '../../../../models/Anniversary';
 
 export async function DELETE(req, { params }) {
   try {

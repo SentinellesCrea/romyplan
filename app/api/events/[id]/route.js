@@ -1,5 +1,6 @@
-import dbConnect from '../../../lib/dbConnect';
-import Event from '../../../models/Event';
+import { NextResponse } from 'next/server';
+import dbConnect from '../../../../lib/dbConnect';
+import Event from '../../../../models/Event';
 
 export async function DELETE(req, { params }) {
   try {

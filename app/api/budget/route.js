@@ -1,23 +1,23 @@
+import { NextResponse } from 'next/server';
 import dbConnect from '../../../lib/dbConnect';
 import Budget from '../../../models/Budget';
 
 // GET : récupérer toutes les lignes de budget
-export async function GET() {
-  try {
-    await dbConnect();
-    const budgets = await Budget.find().sort({ date: -1 }); // les plus récents d'abord
-    return new Response(JSON.stringify(budgets), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('❌ Erreur GET /budget :', error);
-    return new Response(JSON.stringify({ message: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const dateStr = searchParams.get('date');
+
+  await dbConnect();
+
+  if (dateStr) {
+    const filtered = await Budget.find({ date: { $regex: `^${dateStr}` } }).sort({ date: -1 });
+    return NextResponse.json(filtered);
   }
+
+  const all = await Budget.find().sort({ date: -1 });
+  return NextResponse.json(all);
 }
+
 
 // POST : créer une nouvelle ligne budget
 export async function POST(req) {

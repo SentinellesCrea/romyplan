@@ -1,23 +1,30 @@
+import { NextResponse } from 'next/server';
 import dbConnect from '../../../lib/dbConnect';
 import Note from '../../../models/Note';
 
 // GET : récupérer toutes les notes
-export async function GET() {
-  try {
-    await dbConnect();
-    const notes = await Note.find().sort({ date: -1 });
-    return new Response(JSON.stringify(notes), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('❌ Erreur GET /notes :', error);
-    return new Response(JSON.stringify({ message: 'Erreur serveur' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const dateStr = searchParams.get('date');
+
+  await dbConnect();
+
+  if (dateStr) {
+    const start = new Date(dateStr);
+    const end = new Date(dateStr);
+    end.setHours(23, 59, 59, 999);
+
+    const filtered = await Note.find({
+      date: { $gte: start, $lte: end }
+    }).sort({ date: -1 });
+
+    return NextResponse.json(filtered);
   }
+
+  const all = await Note.find().sort({ date: -1 });
+  return NextResponse.json(all);
 }
+
 
 // POST : créer une nouvelle note
 export async function POST(req) {

@@ -1,5 +1,6 @@
-import dbConnect from '../../../lib/dbConnect';
-import Budget from '../../../models/Budget';
+import { NextResponse } from 'next/server';
+import dbConnect from '../../../../lib/dbConnect';
+import Budget from '../../../../models/Budget';
 
 export async function DELETE(req, { params }) {
   try {

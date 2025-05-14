@@ -1,5 +1,6 @@
-import dbConnect from '../../../lib/dbConnect';
-import Task from '../../../models/Task';
+import { NextResponse } from 'next/server';
+import dbConnect from '../../../../lib/dbConnect';
+import Task from '../../../../models/Task';
 
 export async function PUT(req, { params }) {
   try {
