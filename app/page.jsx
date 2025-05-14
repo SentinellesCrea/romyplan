@@ -17,38 +17,12 @@ import Link from 'next/link';
 import 'dayjs/locale/fr';
 
 
-const navItems = [
-  { label: "Aujourdh'ui", href: '/day', icon: <BsCalendarDayFill /> },
-  { label: 'Cette Semaine', href: '/week', icon: <BsCalendarWeekFill /> },
-  { label: 'Le Mois', href: '/month', icon: <BsCalendarMonthFill /> },
-];
-
 
 export default function HomePage() {
-  const pathname = usePathname();
-  const router = useRouter();
-
+  
   return (
     <div className="w-full bg-[#fffaf2]">
       <Header />
-
-        <div className="flex justify-center mt-4">
-          {/* Menu desktop */}
-          <nav className="hidden md:flex gap-12 items-center bg-gradient-to-r from-[#f6ead4] to-[#dbcbb0] p-4 rounded-xl">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex flex-col items-center text-sm font-semibold transition transform hover:scale-105 duration-300 ${
-                  pathname === item.href ? 'text-[#b2581c]' : 'text-[#5f4b8b]'
-                }`}
-              >
-                <span>{item.label}</span> 
-              </Link>
-            ))}
-          </nav>
-        </div>
-
 
           <div className="w-full flex justify-center px-4">
             <div className="w-full max-w-7xl">
