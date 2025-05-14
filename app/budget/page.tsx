@@ -8,25 +8,18 @@ import BudgetForm from '../components/forms/BudgetForm';
 import CalendarPreview from '../components/home/CalendarPreview';
 import { RxCross2 } from 'react-icons/rx';
 import Footer from '../components/home/Footer';
-import { fetchApi } from '@/lib/fetchApi';
+import { fetchApi } from '../../lib/fetchApi'; // Pas d'alias @/lib
 import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 
 type BudgetItem = {
   _id: string;
   titre: string;
+  category?: string;
   subCategory?: string;
   date: string;
   amount: number;
   type: 'dépense' | 'revenu';
-};
-
-const fixedLimits: Record<string, number> = {
-  Course: 200,
-  Shopping: 150,
-  Loisirs: 100,
-  Factures: 400,
-  Dettes: 2000,
-  Autre: 200,
 };
 
 export default function BudgetPage() {
@@ -35,12 +28,17 @@ export default function BudgetPage() {
   const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   useEffect(() => {
-    const loadBudgets = async () => {
-      const data = await fetchApi('/api/budget');
-      setBudgets(Array.isArray(data) ? data : []);
-    };
     loadBudgets();
   }, []);
+
+  const loadBudgets = async () => {
+    try {
+      const data = await fetchApi('/api/budget');
+      setBudgets(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("❌ Erreur lors du chargement des budgets :", error);
+    }
+  };
 
   const filteredBudgets = useMemo(() => {
     return budgets.filter((b) => b.date?.slice(0, 10) === selectedDate);
@@ -48,14 +46,14 @@ export default function BudgetPage() {
 
   const handleBudgetAdded = () => {
     setShowModal(false);
-    loadBudget();
+    loadBudgets();
     toast.success('💰 Budget ajouté avec succès');
 
-    if (typeof window !== 'undefined' && window.refreshCalendar) {
-      window.refreshCalendar();
+    // Optionnel : trigger calendrier s’il y a une logique externe
+    if (typeof window !== 'undefined' && (window as any).refreshCalendar) {
+      (window as any).refreshCalendar();
     }
   };
-
 
   const handleDelete = async (id: string) => {
     try {
@@ -77,17 +75,18 @@ export default function BudgetPage() {
           </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Calendrier à gauche */}
+            {/* Calendrier */}
             <div className="md:col-span-1 p-4 md:p-0">
               <CalendarPreview onDayClick={(date) => setSelectedDate(date)} />
             </div>
 
-            {/* Liste des budgets à droite */}
+            {/* Liste des budgets */}
             <div className="md:col-span-2 p-4 md:p-0">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-[#110444] font-bold text-lg"></h2>
-              <PrimaryButton onClick={() => setShowModal(true)}>+ Ajouter</PrimaryButton>
-            </div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-[#110444] font-bold text-lg">Mes entrées</h2>
+                <PrimaryButton onClick={() => setShowModal(true)}>+ Ajouter</PrimaryButton>
+              </div>
+
               <div className="bg-white shadow-md rounded-xl p-4">
                 {filteredBudgets.length === 0 ? (
                   <p className="text-sm text-gray-500">Aucun budget pour cette date.</p>
@@ -96,8 +95,8 @@ export default function BudgetPage() {
                     {filteredBudgets.map((item) => (
                       <li key={item._id} className="flex justify-between items-center">
                         <div className="flex flex-col">
-                          <span >
-                            <span className="text-gray-900 text-lg">{item.titre}</span>
+                          <span className="text-gray-900 text-lg">
+                            {item.titre}
                             {item.subCategory && (
                               <span className="ml-1 text-pink-600 font-medium text-xs">
                                 [{item.subCategory}]
@@ -128,11 +127,11 @@ export default function BudgetPage() {
                 )}
               </div>
 
-                {showModal && (
-                  <Modal onClose={() => setShowModal(false)}>
-                    <BudgetForm onSubmitSuccess={handleBudgetAdded} />
-                  </Modal>
-                )}
+              {showModal && (
+                <Modal onClose={() => setShowModal(false)}>
+                  <BudgetForm onSubmitSuccess={handleBudgetAdded} />
+                </Modal>
+              )}
             </div>
           </div>
         </div>

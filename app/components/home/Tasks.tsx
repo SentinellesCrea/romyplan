@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FaPen } from "react-icons/fa6";
-import { RxCross2 } from "react-icons/rx";
-import { FcHighPriority } from "react-icons/fc";
+import { FaPen } from 'react-icons/fa6';
+import { RxCross2 } from 'react-icons/rx';
+import { FcHighPriority } from 'react-icons/fc';
 import PrimaryButton from '../ui/PrimaryButton';
 import Modal from '../ui/Modal';
 import TaskForm from '../forms/TaskForm';
-import { fetchApi } from '@/lib/fetchApi';
+import { fetchApi } from '../../../lib/fetchApi';
 import { toast } from 'react-toastify';
 
 type TaskType = {
@@ -17,6 +17,7 @@ type TaskType = {
   emoji?: string;
   color?: string;
   done: boolean;
+  priority?: 'Basse' | 'Moyenne' | 'Haute';
 };
 
 export default function Tasks() {
@@ -27,7 +28,7 @@ export default function Tasks() {
   const loadTasks = async () => {
     try {
       const data = await fetchApi('/api/tasks');
-      setTasks(data);
+      setTasks(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('❌ Erreur chargement des tâches :', err);
       toast.error('Erreur lors du chargement des tâches');
@@ -43,8 +44,8 @@ export default function Tasks() {
     setEditingTask(null);
     loadTasks();
     toast.success('✅ Tâche enregistrée');
-    if (typeof window !== 'undefined' && window.refreshCalendar) {
-      window.refreshCalendar();
+    if (typeof window !== 'undefined' && (window as any).refreshCalendar) {
+      (window as any).refreshCalendar();
     }
   };
 
@@ -56,9 +57,6 @@ export default function Tasks() {
       await fetchApi(`/api/tasks/${id}`, { method: 'DELETE' });
       toast.success('🗑️ Tâche supprimée');
       loadTasks();
-      if (typeof window !== 'undefined' && window.refreshCalendar) {
-        window.refreshCalendar();
-      }
     } catch (err) {
       console.error('Erreur suppression tâche :', err);
       toast.error('Erreur lors de la suppression');
@@ -129,9 +127,11 @@ export default function Tasks() {
                     : task.description}
                 </p>
               )}
-                  <span className="flex text-xs font-medium mt-2 gap-2">
-                    <FcHighPriority />{task.priority}
-                  </span>
+              {task.priority && (
+                <span className="flex text-xs font-medium mt-2 gap-2">
+                  <FcHighPriority /> {task.priority}
+                </span>
+              )}
             </div>
 
             <button

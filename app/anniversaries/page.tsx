@@ -4,18 +4,30 @@ import { useEffect, useMemo, useState } from 'react';
 import Header from '../components/home/Header';
 import CalendarPreview from '../components/home/CalendarPreview';
 import Footer from '../components/home/Footer';
-import { fetchApi } from '@/lib/fetchApi';
+import { fetchApi } from '../../lib/fetchApi'; // chemin relatif sans alias
 import dayjs from 'dayjs';
-import { Anniversary } from "@/models/Anniversary";
+
+type Anniversary = {
+  _id: string;
+  name: string;
+  date: string;
+  description?: string;
+  color?: string;
+  allDay?: boolean;
+};
 
 export default function AnniversariesPage() {
-  const [anniversaries, setAnniversaries] = useState([]);
+  const [anniversaries, setAnniversaries] = useState<Anniversary[]>([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   useEffect(() => {
     const loadAnniversaries = async () => {
-      const data = await fetchApi('/api/anniversaries');
-      setAnniversaries(Array.isArray(data) ? data : []);
+      try {
+        const data = await fetchApi('/api/anniversaries');
+        setAnniversaries(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Erreur de chargement des anniversaires :", error);
+      }
     };
     loadAnniversaries();
   }, []);
@@ -25,7 +37,7 @@ export default function AnniversariesPage() {
   }, [anniversaries, selectedDate]);
 
   return (
-    <div className="bg-[#fffaf2] min-h-screen ">
+    <div className="bg-[#fffaf2] min-h-screen">
       <Header />
 
       <div className="w-full flex justify-center">
@@ -45,8 +57,8 @@ export default function AnniversariesPage() {
                   <p className="text-sm text-gray-500">Aucun anniversaire pour cette date.</p>
                 ) : (
                   <ul className="space-y-2">
-                    {filteredAnniversaries.map((a, i) => (
-                      <li key={i} className="text-sm text-gray-700">
+                    {filteredAnniversaries.map((a) => (
+                      <li key={a._id} className="text-sm text-gray-700">
                         🎂 {a.name} ({a.date?.slice(0, 10)})
                       </li>
                     ))}

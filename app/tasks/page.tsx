@@ -4,18 +4,34 @@ import { useEffect, useMemo, useState } from 'react';
 import Header from '../components/home/Header';
 import CalendarPreview from '../components/home/CalendarPreview';
 import Footer from '../components/home/Footer';
-import { fetchApi } from '@/lib/fetchApi';
-import dayjs from 'dayjs';
 import Tasks from '../components/home/Tasks';
+import { fetchApi } from '../../lib/fetchApi'; // ✅ chemin relatif
+import dayjs from 'dayjs';
+
+type TaskItem = {
+  _id: string;
+  label: string;
+  description?: string;
+  date: string;
+  priority?: 'Basse' | 'Moyenne' | 'Haute';
+  category?: string;
+  emoji?: string;
+  color?: string;
+  done?: boolean;
+};
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   useEffect(() => {
     const loadTasks = async () => {
-      const data = await fetchApi('/api/tasks');
-      setTasks(Array.isArray(data) ? data : []);
+      try {
+        const data = await fetchApi('/api/tasks');
+        setTasks(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("❌ Erreur lors du chargement des tâches :", error);
+      }
     };
     loadTasks();
   }, []);
@@ -25,7 +41,7 @@ export default function TasksPage() {
   }, [tasks, selectedDate]);
 
   return (
-    <div className="bg-[#fffaf2] min-h-screen ">
+    <div className="bg-[#fffaf2] min-h-screen">
       <Header />
 
       <div className="w-full flex justify-center">
@@ -35,18 +51,18 @@ export default function TasksPage() {
           </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Calendrier à gauche */}
+            {/* Calendrier */}
             <div className="md:col-span-1 p-4 md:p-0">
               <CalendarPreview onDayClick={(date) => setSelectedDate(date)} />
             </div>
 
-            {/* Tâches à droite */}
+            {/* Tâches */}
             <div className="md:col-span-2 p-4 md:p-0">
               <div className="bg-white shadow-md rounded-xl p-4">
                 {filteredTasks.length === 0 ? (
                   <p className="text-sm text-gray-500">Aucune tâche pour cette date.</p>
                 ) : (
-                  <Tasks />
+                  <Tasks tasks={filteredTasks} />
                 )}
               </div>
             </div>

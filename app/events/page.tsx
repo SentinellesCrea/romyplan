@@ -4,17 +4,33 @@ import { useEffect, useMemo, useState } from 'react';
 import Header from '../components/home/Header';
 import CalendarPreview from '../components/home/CalendarPreview';
 import Footer from '../components/home/Footer';
-import { fetchApi } from '@/lib/fetchApi';
+import { fetchApi } from '../../lib/fetchApi'; // ✅ chemin relatif sans alias
 import dayjs from 'dayjs';
 
+type EventItem = {
+  _id: string;
+  title: string;
+  address?: string;
+  date: string;
+  start?: string;
+  end?: string;
+  allDay?: boolean;
+  category?: string;
+  color?: string;
+};
+
 export default function EventsPage() {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   useEffect(() => {
     const loadEvents = async () => {
-      const data = await fetchApi('/api/events');
-      setEvents(Array.isArray(data) ? data : []);
+      try {
+        const data = await fetchApi('/api/events');
+        setEvents(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('❌ Erreur chargement événements :', error);
+      }
     };
     loadEvents();
   }, []);
@@ -24,7 +40,7 @@ export default function EventsPage() {
   }, [events, selectedDate]);
 
   return (
-    <div className="w-full bg-[#fffaf2]">
+    <div className="w-full bg-[#fffaf2] min-h-screen">
       <Header />
 
       <div className="w-full flex justify-center px-4">
@@ -34,21 +50,22 @@ export default function EventsPage() {
           </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Calendrier à gauche */}
+            {/* Calendrier */}
             <div className="md:col-span-1 p-4 md:p-0">
               <CalendarPreview onDayClick={(date) => setSelectedDate(date)} />
             </div>
 
-            {/* Événements à droite */}
+            {/* Événements */}
             <div className="md:col-span-2 p-4 md:p-0">
               <div className="bg-white shadow-md rounded-xl p-4">
                 {filteredEvents.length === 0 ? (
                   <p className="text-sm text-gray-500">Aucun événement pour cette date.</p>
                 ) : (
                   <ul className="space-y-2">
-                    {filteredEvents.map((e, i) => (
-                      <li key={i} className="text-sm text-gray-700">
-                        📍 {e.title} — {e.address}
+                    {filteredEvents.map((e) => (
+                      <li key={e._id} className="text-sm text-gray-700">
+                        📍 <strong>{e.title}</strong>
+                        {e.address && <span> — {e.address}</span>}
                       </li>
                     ))}
                   </ul>
