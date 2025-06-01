@@ -52,7 +52,7 @@ export default function Header() {
       <header className="w-full bg-gradient-to-r from-[#f6ead4] to-[#dbcbb0] h-20 rounded-b-3xl text-[#110444] shadow-md flex items-center justify-between px-6 relative z-50">
         <Link href="/" passHref>
           <h1 className="text-2xl sm:text-3xl font-bold italic cursor-pointer transition transform hover:scale-105 duration-300">
-            RomyPlan 🌸
+            Mon plannificateur
           </h1>
         </Link>
 
